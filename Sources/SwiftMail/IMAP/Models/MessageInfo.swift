@@ -62,6 +62,10 @@ public struct MessageInfo: Codable, Sendable {
     /// request asks for it.
     public var size: Int?
 
+    /// The ENVELOPE strings as the server sent them, before SwiftMail decodes
+    /// or rebuilds them. Set by every fetch that asks for ENVELOPE; `nil` otherwise.
+    public var rawEnvelope: RawEnvelope?
+
     private enum CodingKeys: String, CodingKey {
         case sequenceNumber
         case uid
@@ -86,6 +90,7 @@ public struct MessageInfo: Codable, Sendable {
         case additionalFields
         case additionalHeaderFields
         case size
+        case rawEnvelope
     }
 
     /// Initialize a new email header
@@ -173,6 +178,7 @@ public extension MessageInfo {
         toAddresses = try Self.decodeAddresses(from: container, forKey: .toAddresses, legacyKey: .to)
         ccAddresses = try Self.decodeAddresses(from: container, forKey: .ccAddresses, legacyKey: .cc)
         bccAddresses = try Self.decodeAddresses(from: container, forKey: .bccAddresses, legacyKey: .bcc)
+        rawEnvelope = try container.decodeIfPresent(RawEnvelope.self, forKey: .rawEnvelope)
     }
 
     /// Encodes the structured addresses, and their text under the keys older
@@ -202,6 +208,7 @@ public extension MessageInfo {
         try container.encodeIfPresent(additionalFields, forKey: .additionalFields)
         try container.encodeIfPresent(additionalHeaderFields, forKey: .additionalHeaderFields)
         try container.encodeIfPresent(size, forKey: .size)
+        try container.encodeIfPresent(rawEnvelope, forKey: .rawEnvelope)
     }
 
     /// Decode an address field from its structured key, or else from the text

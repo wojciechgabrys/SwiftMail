@@ -234,6 +234,7 @@ final class FetchMessageInfoHandler: BaseIMAPCommandHandler<[MessageInfo]>, IMAP
     /// Pull envelope fields (subject, addresses, date, ids) onto a header in one
     /// shot so the top-level switch stays shallow.
     private func applyEnvelope(_ envelope: Envelope, to header: inout MessageInfo) {
+        header.rawEnvelope = MessageInfo.RawEnvelope(envelope)
         if let subject = envelope.subject?.stringValue {
             header.subject = subject.decodeMIMEHeader()
         }
