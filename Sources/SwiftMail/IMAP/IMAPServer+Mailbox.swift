@@ -23,6 +23,24 @@ extension IMAPServer {
     }
 
     /**
+     Subscribe to a mailbox on the server
+
+     Adds the mailbox to the server's set of subscribed mailboxes (RFC 3501 §6.3.6),
+     the set `LSUB` lists and that mail clients show. `CREATE` does not subscribe
+     a new mailbox; call this after ``createMailbox(_:)`` for it to appear in them.
+
+     - Parameter mailboxName: The name of the mailbox to subscribe to
+     - Throws:
+     - `IMAPError.invalidArgument` if the name is empty
+     - `IMAPError.commandFailed` if the server refuses the subscribe
+     - `IMAPError.connectionFailed` if not connected
+     */
+    public func subscribeMailbox(_ mailboxName: String) async throws {
+        let command = SubscribeMailboxCommand(mailboxName: resolveMailboxPath(mailboxName))
+        try await executeCommand(command)
+    }
+
+    /**
      Rename a mailbox on the server
 
      This method renames an existing mailbox (folder). Use forward slashes for

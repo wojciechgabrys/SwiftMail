@@ -592,6 +592,10 @@ final class IMAPTestServer {
             case "ID":
                 recordIDCommand()
                 return "* ID NIL\r\n\(tag) OK ID completed\r\n"
+            case "SUBSCRIBE":
+                // Any mailbox whose name ends in `Refused` stands for one the server won't subscribe.
+                guard !args.hasSuffix("Refused\"") else { return "\(tag) NO No such mailbox\r\n" }
+                return "\(tag) OK SUBSCRIBE completed\r\n"
             case "NOOP":
                 return "\(tag) OK NOOP completed\r\n"
             case "EXPUNGE":
